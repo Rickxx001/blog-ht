@@ -24,7 +24,8 @@ public enum AppHttpCodeEnum {
     ARTICLE_NOTNULL(514,"同学写点什么吧"),
     EXCE_ERROR(515,"导出错误"),
     MENU_ERROR(516,"修改菜单错误，不可以把当前菜单设置为父菜单"),
-    MENU_DEL_ERROR(517,"存在子菜单，不可删除" );
+    MENU_DEL_ERROR(517,"存在子菜单，不可删除" ),
+    UPDATE_ADMIN_ERROR(518,"超级管理员不可删除");
 
 
     int code;

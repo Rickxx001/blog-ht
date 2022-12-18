@@ -5,11 +5,15 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stx.domain.ResponseResult;
+import com.stx.domain.dto.UpdateRoleDto;
 import com.stx.domain.entity.Role;
 import com.stx.domain.entity.RoleMenu;
+import com.stx.domain.vo.GetRoleDetailsVo;
 import com.stx.domain.vo.PageVo;
 import com.stx.domain.vo.RoleListVo;
 import com.stx.domain.vo.SaveRoleDto;
+import com.stx.enums.AppHttpCodeEnum;
+import com.stx.exception.SystemException;
 import com.stx.mapper.RoleMapper;
 import com.stx.service.RoleMenuService;
 import com.stx.service.RoleService;
@@ -35,14 +39,46 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Autowired
     RoleMenuService roleMenuService;
 
+
+    @Override
+    public ResponseResult deleteRole(Long id) {
+        if(id.equals(1l)){
+            throw new SystemException(AppHttpCodeEnum.UPDATE_ADMIN_ERROR);
+        }
+        removeById(id);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    @Transactional
+    public ResponseResult updateRole(UpdateRoleDto dto) {
+        Role role = BeanCopyUtils.copyBean(dto, Role.class);
+        updateById(role);
+        List<RoleMenu> collect = dto.getMenuIds().stream()
+                .map(m -> new RoleMenu(role.getId(), m))
+                .collect(Collectors.toList());
+        LambdaQueryWrapper<RoleMenu> roleMenuLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        roleMenuLambdaQueryWrapper.eq(RoleMenu::getRoleId, role.getId());
+        roleMenuService.remove(roleMenuLambdaQueryWrapper);
+        roleMenuService.saveBatch(collect);
+        return null;
+    }
+
+    @Override
+    public ResponseResult getRoleDetails(Long id) {
+        Role byId = getById(id);
+        GetRoleDetailsVo getRoleDetailsVo = BeanCopyUtils.copyBean(byId, GetRoleDetailsVo.class);
+        return ResponseResult.okResult(getRoleDetailsVo);
+    }
+
     @Override
     @Transactional
     public ResponseResult saveRole(SaveRoleDto saveRole) {
         Role role = BeanCopyUtils.copyBean(saveRole, Role.class);
+        save(role);
         List<RoleMenu> collect = saveRole.getMenuIds().stream()
                 .map(m -> new RoleMenu(role.getId(), m))
                 .collect(Collectors.toList());
-        save(role);
         roleMenuService.saveBatch(collect);
         return ResponseResult.okResult();
     }

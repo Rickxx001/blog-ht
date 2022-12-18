@@ -5,16 +5,17 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stx.constants.SystemConstants;
 import com.stx.domain.ResponseResult;
 import com.stx.domain.entity.Menu;
-import com.stx.domain.vo.MenuListVo;
-import com.stx.domain.vo.MenuTreeVo;
-import com.stx.domain.vo.MenuVo;
-import com.stx.domain.vo.SelectMenuVo;
+import com.stx.domain.entity.RoleMenu;
+import com.stx.domain.vo.*;
 import com.stx.enums.AppHttpCodeEnum;
 import com.stx.exception.SystemException;
 import com.stx.mapper.MenuMapper;
+import com.stx.mapper.RoleMenuMapper;
 import com.stx.service.MenuService;
+import com.stx.service.RoleMenuService;
 import com.stx.utils.BeanCopyUtils;
 import com.stx.utils.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -31,16 +32,29 @@ import java.util.stream.Collectors;
 @Service("menuService")
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements MenuService {
 
+    @Autowired
+    private RoleMenuMapper roleMenuMapper;
+
+    @Override
+    public ResponseResult getRoleMenuTreeselect(Long id) {
+//        菜单树 + menu id列表
+        List<MenuTreeVo> menuTreeVos = builderMenuTreeV(0L);
+        List<Long> checkedKeys = roleMenuMapper.getRoleMenuList(id);
+        RoleMenuTreeselectVo roleMenuTreeselectVo = new RoleMenuTreeselectVo(menuTreeVos, checkedKeys);
+        return ResponseResult.okResult(roleMenuTreeselectVo);
+    }
 
     @Override
     public ResponseResult menuTree() {
-        List<Menu> list = list();
-        List<MenuTreeVo> menuTreeVos = BeanCopyUtils.copyBeanList(list, MenuTreeVo.class);
-        List<MenuTreeVo> menuTreeVos1 = builderMenuTreeV(menuTreeVos, 0l);
+
+        List<MenuTreeVo> menuTreeVos1 = builderMenuTreeV(0l);
         return ResponseResult.okResult(menuTreeVos1);
     }
 
-    private List<MenuTreeVo> builderMenuTreeV(List<MenuTreeVo> menuTreeVos, long parentId) {
+    //    构建菜单树
+    private List<MenuTreeVo> builderMenuTreeV(long parentId) {
+        List<Menu> list = list();
+        List<MenuTreeVo> menuTreeVos = BeanCopyUtils.copyBeanList(list, MenuTreeVo.class);
         List<MenuTreeVo> collect = menuTreeVos.stream()
                 .filter(menutree -> menutree.getParentId().equals(parentId))
                 .map(m -> m.setLabel(m.getMenuName()))
@@ -48,7 +62,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
                 .collect(Collectors.toList());
         return collect;
     }
-    private List<MenuTreeVo> getChildrenV(MenuTreeVo menuTreeVo, List<MenuTreeVo> menuTreeVos){
+
+    private List<MenuTreeVo> getChildrenV(MenuTreeVo menuTreeVo, List<MenuTreeVo> menuTreeVos) {
         List<MenuTreeVo> collect = menuTreeVos.stream()
                 .filter(mt -> mt.getParentId().equals(menuTreeVo.getId()))
                 .map(m -> m.setLabel(m.getMenuName()))
@@ -60,9 +75,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public ResponseResult deleteMenu(Long id) {
         LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        menuLambdaQueryWrapper.eq(Menu::getParentId,id);
+        menuLambdaQueryWrapper.eq(Menu::getParentId, id);
         List<Menu> list = list(menuLambdaQueryWrapper);
-        if(!CollectionUtils.isEmpty(list)){
+        if (!CollectionUtils.isEmpty(list)) {
             throw new SystemException(AppHttpCodeEnum.MENU_DEL_ERROR);
         }
         removeById(id);
@@ -71,7 +86,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     @Override
     public ResponseResult updateMenu(Menu menu) {
-        if( menu.getId().equals(menu.getParentId())){
+        if (menu.getId().equals(menu.getParentId())) {
             throw new SystemException(AppHttpCodeEnum.MENU_ERROR);
         }
         updateById(menu);
@@ -94,9 +109,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public ResponseResult menuList(String status, String menuName) {
         LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        menuLambdaQueryWrapper.like(StringUtils.hasText(status),Menu::getStatus,status);
-        menuLambdaQueryWrapper.like(StringUtils.hasText(menuName),Menu::getMenuName,menuName);
-        menuLambdaQueryWrapper.orderByAsc(Menu::getParentId,Menu::getOrderNum);
+        menuLambdaQueryWrapper.like(StringUtils.hasText(status), Menu::getStatus, status);
+        menuLambdaQueryWrapper.like(StringUtils.hasText(menuName), Menu::getMenuName, menuName);
+        menuLambdaQueryWrapper.orderByAsc(Menu::getParentId, Menu::getOrderNum);
         List<Menu> list = list(menuLambdaQueryWrapper);
         List<MenuListVo> menuListVos = BeanCopyUtils.copyBeanList(list, MenuListVo.class);
         return ResponseResult.okResult(menuListVos);
@@ -105,17 +120,17 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public List<String> selectPermsByUserId(Long id) {
 //        对于管理员 返回全部菜单
-        if (SecurityUtils.isAdmin()){
+        if (SecurityUtils.isAdmin()) {
             LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
             menuLambdaQueryWrapper.in(Menu::getMenuType, SystemConstants.MENU, SystemConstants.BUTTON);
-            menuLambdaQueryWrapper.eq(Menu::getStatus,SystemConstants.STATUS_NORMAL);
+            menuLambdaQueryWrapper.eq(Menu::getStatus, SystemConstants.STATUS_NORMAL);
             List<Menu> list = list(menuLambdaQueryWrapper);
             List<String> Perms = list.stream()
                     .map(Menu::getPerms)
                     .collect(Collectors.toList());
             return Perms;
         }
-       List<String> perms =  getBaseMapper().selectPermsByUserId(id);
+        List<String> perms = getBaseMapper().selectPermsByUserId(id);
         return perms;
     }
 
@@ -124,15 +139,15 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         MenuMapper baseMapper = getBaseMapper();
         List<MenuVo> menu = null;
 //        管理员返回所有菜单
-        if(SecurityUtils.isAdmin()){
-           menu = baseMapper.selectAllRouterMenu();
-        }else {
+        if (SecurityUtils.isAdmin()) {
+            menu = baseMapper.selectAllRouterMenu();
+        } else {
 //            否者返回当前用户具有的menu
             menu = baseMapper.SelectRouterMenuTreeByUserId(userId);
         }
 
 //        构建tree
-        List<MenuVo> menuTree = builderMenuTree(menu,0L);
+        List<MenuVo> menuTree = builderMenuTree(menu, 0L);
         return menuTree;
     }
 
@@ -142,15 +157,16 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
                 .filter(menuVo -> menuVo.getParentId().equals(parentId))
                 .map(menuVo -> menuVo.setChildren(getChildren(menuVo, menu)))
                 .collect(Collectors.toList());
-        return  menuTree;
+        return menuTree;
     }
-//    或取 子菜单
+
+    //    或取 子菜单
     private List<MenuVo> getChildren(MenuVo menuVo, List<MenuVo> menu) {
         List<MenuVo> collect = menu.stream()
                 .filter(menu1 -> menu1.getParentId().equals(menuVo.getId()))
-                .map(m -> m.setChildren(getChildren(m,menu)))
+                .map(m -> m.setChildren(getChildren(m, menu)))
                 .collect(Collectors.toList());
-       return collect;
+        return collect;
     }
 
 

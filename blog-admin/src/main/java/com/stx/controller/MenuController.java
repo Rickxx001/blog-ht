@@ -14,6 +14,11 @@ public class MenuController {
     @Autowired
     MenuService menuService;
 
+    @SystemLog(businessName = "返回角色菜单树")
+    @GetMapping("/roleMenuTreeselect/{id}")
+    public ResponseResult getRoleMenuTreeselect(@PathVariable Long id){
+        return menuService.getRoleMenuTreeselect(id);
+    }
 
     @SystemLog(businessName = "返回菜单树")
     @GetMapping("/treeselect")
