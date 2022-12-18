@@ -1,0 +1,8 @@
+com\stx\controller\CategoryController.class
+com\stx\controller\UploadController.class
+com\stx\controller\TagController.class
+com\stx\filter\JwtAuthenticationTokenFilter.class
+com\stx\BlogAdminApplication.class
+com\stx\controller\ArticleController.class
+com\stx\controller\LoginController.class
+com\stx\config\SecurityConfig.class
