@@ -1,16 +1,24 @@
 package com.stx.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stx.constants.SystemConstants;
 import com.stx.domain.ResponseResult;
+import com.stx.domain.dto.CategoryDto;
+import com.stx.domain.dto.PageListCategoryDto;
+import com.stx.domain.dto.UpdateCategoryDto;
 import com.stx.domain.entity.Article;
 import com.stx.domain.entity.Category;
 import com.stx.domain.vo.CategoryVo;
+import com.stx.domain.vo.GetCategoryVo;
+import com.stx.domain.vo.PageCategoryVo;
+import com.stx.domain.vo.PageVo;
 import com.stx.mapper.CategoryMapper;
 import com.stx.service.ArticleService;
 import com.stx.service.CategoryService;
 import com.stx.utils.BeanCopyUtils;
+import io.jsonwebtoken.lang.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +37,45 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
     @Autowired
     private ArticleService articleService;
+
+    @Override
+    public ResponseResult deleteCategory(Long id) {
+        removeById(id);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult updateCategory(UpdateCategoryDto dto) {
+        Category category = BeanCopyUtils.copyBean(dto, Category.class);
+        updateById(category);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult getCategory(Long id) {
+        Category byId = getById(id);
+        GetCategoryVo getCategoryVo = BeanCopyUtils.copyBean(byId, GetCategoryVo.class);
+        return ResponseResult.okResult(getCategoryVo);
+    }
+
+    @Override
+    public ResponseResult saveCategory(CategoryDto categoryDto) {
+        Category category = BeanCopyUtils.copyBean(categoryDto, Category.class);
+        save(category);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult pageListCategory(Integer pageNum, Integer pageSize, PageListCategoryDto dto) {
+        LambdaQueryWrapper<Category> articleLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        articleLambdaQueryWrapper.eq(Strings.hasText(dto.getStatus()),Category::getStatus,dto.getStatus());
+        articleLambdaQueryWrapper.eq(Strings.hasText(dto.getName()),Category::getName,dto.getName());
+        Page<Category> page = new Page<>(pageNum,pageSize);
+        page(page, articleLambdaQueryWrapper);
+        List<PageCategoryVo> pageCategoryVos = BeanCopyUtils.copyBeanList(page.getRecords(), PageCategoryVo.class);
+        PageVo pageVo = new PageVo( pageCategoryVos,page.getTotal());
+        return ResponseResult.okResult(pageVo);
+    }
 
     @Override
     public ResponseResult getCategoryList() {

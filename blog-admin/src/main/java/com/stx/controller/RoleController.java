@@ -28,7 +28,6 @@ public class RoleController {
         return roleService.updateRole(dto);
     }
 
-
     @SystemLog(businessName = "分页查询角色列表")
     @GetMapping("/list")
     public ResponseResult listRole(Integer pageNum, Integer pageSize, String status, String roleName) {

@@ -2,6 +2,9 @@ package com.stx.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stx.domain.ResponseResult;
+import com.stx.domain.dto.CategoryDto;
+import com.stx.domain.dto.PageListCategoryDto;
+import com.stx.domain.dto.UpdateCategoryDto;
 import com.stx.domain.entity.Category;
 
 import java.util.List;
@@ -17,5 +20,15 @@ public interface CategoryService extends IService<Category> {
     ResponseResult getCategoryList();
 
     List<Category> listAllCategory();
+
+    ResponseResult pageListCategory(Integer pageNum, Integer pageSize, PageListCategoryDto category);
+
+    ResponseResult saveCategory(CategoryDto categoryDto);
+
+    ResponseResult getCategory(Long id);
+
+    ResponseResult updateCategory(UpdateCategoryDto dto);
+
+    ResponseResult deleteCategory(Long id);
 }
 
