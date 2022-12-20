@@ -17,6 +17,7 @@ import java.util.List;
  */
 public interface RoleService extends IService<Role> {
 
+     List<Role> getRolesList();
     List<String> selectRoleKeyByUserId(Long id);
 
     ResponseResult listRole(Integer pageNum, Integer pageSize, String status, String roleName);
@@ -30,5 +31,7 @@ public interface RoleService extends IService<Role> {
     ResponseResult updateRole(UpdateRoleDto dto);
 
     ResponseResult deleteRole(Long id);
+
+    ResponseResult listAllRole();
 }
 

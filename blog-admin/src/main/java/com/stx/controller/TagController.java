@@ -15,47 +15,50 @@ import org.springframework.web.bind.annotation.*;
 public class TagController {
 
     @Autowired
-   private TagService tagService;
+    private TagService tagService;
 
-//    分页查询标签
-@SystemLog(businessName ="分页查询标签")
+    //    分页查询标签
+    @SystemLog(businessName = "分页查询标签")
     @GetMapping("/list")
-    public ResponseResult<PageVo> PageTagList(Integer pageNum, Integer pageSize, TagDto tagDto){
-        return tagService.listTag(pageNum,pageSize, tagDto);
+    public ResponseResult<PageVo> PageTagList(Integer pageNum, Integer pageSize, TagDto tagDto) {
+        return tagService.listTag(pageNum, pageSize, tagDto);
     }
-//  查询所有标签
-@SystemLog(businessName ="查询所有标签")
+
+    //  查询所有标签
+    @SystemLog(businessName = "查询所有标签")
     @GetMapping("/listAllTag")
-    public ResponseResult tagList(){
+    public ResponseResult tagList() {
         return tagService.tagList();
     }
 
-//   添加标签
-@SystemLog(businessName ="添加标签")
+    //   添加标签
+    @SystemLog(businessName = "添加标签")
     @PreAuthorize("@ps.hasPermission('content:tag:index')")
     @PostMapping
-    public ResponseResult addTag(@RequestBody TagDto tagDto){
+    public ResponseResult addTag(@RequestBody TagDto tagDto) {
         return tagService.addTag(tagDto);
     }
 
     //    删除标签
-    @SystemLog(businessName ="删除标签")
+    @SystemLog(businessName = "删除标签")
     @PreAuthorize("@ps.hasPermission('content:tag:index')")
     @DeleteMapping("/{Id}")
-    public  ResponseResult deleteTag(@PathVariable Long Id){
+    public ResponseResult deleteTag(@PathVariable Long Id) {
         return tagService.deleteTag(Id);
     }
-//    获取标签
-@SystemLog(businessName ="获取标签")
+
+    //    获取标签
+    @SystemLog(businessName = "获取标签")
     @GetMapping("/{id}")
-    public ResponseResult getTag(@PathVariable Long id){
+    public ResponseResult getTag(@PathVariable Long id) {
         return tagService.getTag(id);
     }
-//  修改标签byId
-@SystemLog(businessName ="修改标签")
+
+    //  修改标签byId
+    @SystemLog(businessName = "修改标签")
     @PutMapping
     @PreAuthorize("@ps.hasPermission('content:tag:index')")
-    public ResponseResult updateTag(@RequestBody TagVo tagDto){
+    public ResponseResult updateTag(@RequestBody TagVo tagDto) {
         return tagService.updateTag(tagDto);
     }
 

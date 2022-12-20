@@ -42,4 +42,5 @@ public class SystemConstants {
 
 //    管理员标识
     public static final String ADMIN = "1";
+    public static final Long USER_MOER = 16l;
 }

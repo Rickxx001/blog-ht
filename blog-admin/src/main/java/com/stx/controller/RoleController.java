@@ -16,6 +16,12 @@ public class RoleController {
     @Autowired
     RoleService roleService;
 
+    @SystemLog(businessName = "回显角色列表")
+    @GetMapping("/listAllRole")
+        public ResponseResult listAllRole(){
+        return roleService.listAllRole();
+        }
+
     @SystemLog(businessName = "删除角色")
     @DeleteMapping("/{id}")
     public ResponseResult deleteRole(@PathVariable Long id) {

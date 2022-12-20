@@ -1,5 +1,6 @@
 package com.stx.controller;
 
+import com.stx.constants.SystemConstants;
 import com.stx.domain.ResponseResult;
 import com.stx.domain.entity.User;
 import com.stx.service.UserService;
@@ -17,7 +18,6 @@ public class UserController {
 
     }
 
-//    TODO  封装dto对象
     @PutMapping("/userInfo")
     public ResponseResult updateuserInfo(@RequestBody User user){
        return userService.updateuserInfo(user);
@@ -25,6 +25,6 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseResult register(@RequestBody User user){
-        return userService.register(user);
+        return userService.register(user,null);
     }
 }
