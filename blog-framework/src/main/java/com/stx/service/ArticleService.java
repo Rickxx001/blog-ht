@@ -33,5 +33,7 @@ public interface ArticleService extends IService<Article> {
     ResponseResult updateArticle(ArticleUpdateDto dto);
 
     ResponseResult deleteArticle(Long id);
+
+    ResponseResult getArticle(Integer pageNum, Integer pageSize, String title);
 }
 

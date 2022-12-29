@@ -1,8 +1,13 @@
-com\stx\controller\CategoryController.class
-com\stx\controller\UploadController.class
+com\stx\controller\UserController.class
 com\stx\controller\TagController.class
-com\stx\filter\JwtAuthenticationTokenFilter.class
 com\stx\BlogAdminApplication.class
-com\stx\controller\ArticleController.class
 com\stx\controller\LoginController.class
+com\stx\controller\CategoryController.class
+com\stx\controller\MenuController.class
+com\stx\controller\UploadController.class
+com\stx\filter\JwtAuthenticationTokenFilter.class
+com\stx\controller\LinkController.class
+com\stx\controller\CommentController.class
+com\stx\controller\ArticleController.class
+com\stx\controller\RoleController.class
 com\stx\config\SecurityConfig.class

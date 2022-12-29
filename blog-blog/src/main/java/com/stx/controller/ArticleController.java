@@ -2,7 +2,6 @@ package com.stx.controller;
 
 import com.stx.annotation.SystemLog;
 import com.stx.domain.ResponseResult;
-import com.stx.domain.entity.Article;
 import com.stx.service.ArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,4 +44,11 @@ public class ArticleController {
     public ResponseResult getArticleDetail(@PathVariable Long id) {
         return articleService.getArticleDetail(id);
     }
+
+
+    @GetMapping("/getArticleById")
+    public ResponseResult getArticle(Integer pageNum,Integer pageSize,String title){
+        return articleService.getArticle(pageNum,pageSize,title);
+    }
+
 }

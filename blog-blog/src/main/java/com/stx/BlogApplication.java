@@ -9,6 +9,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @MapperScan("com.stx.mapper")
 @EnableSwagger2
+@EnableScheduling
 public class BlogApplication {
 
     public static void main(String[] args) {

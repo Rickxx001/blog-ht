@@ -1,11 +1,7 @@
 server:
   port: 7777
 spring:
-#  mail邮件尝试
-  mail:
-    host: mail.qq.com
-    username: 2060023485@qq.com
-    password: ulpglanoqfkccjhf
+
 
   datasource:
 

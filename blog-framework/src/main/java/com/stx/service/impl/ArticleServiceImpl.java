@@ -12,7 +12,6 @@ import com.stx.domain.dto.WriteArticleDto;
 import com.stx.domain.entity.Article;
 import com.stx.domain.entity.ArticleTag;
 import com.stx.domain.entity.Category;
-import com.stx.domain.entity.Tag;
 import com.stx.domain.vo.*;
 import com.stx.enums.AppHttpCodeEnum;
 import com.stx.exception.SystemException;
@@ -21,13 +20,11 @@ import com.stx.service.ArticleService;
 import com.stx.service.CategoryService;
 import com.stx.utils.BeanCopyUtils;
 import com.stx.utils.RedisCache;
-import com.stx.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Objects;
@@ -51,6 +48,19 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
 
     @Autowired
     private ArticleTagServiceImpl articleTagService;
+
+
+    @Override
+    public ResponseResult getArticle(Integer pageNum, Integer pageSize, String title) {
+        LambdaQueryWrapper<Article> articleLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        articleLambdaQueryWrapper.like(Article::getTitle,title);
+        articleLambdaQueryWrapper.eq(Article::getStatus, SystemConstants.ARTICLE_STATUS_NORMAL);
+        Page<Article> articlePage = new Page<>(pageNum, pageSize);
+        page(articlePage,articleLambdaQueryWrapper);
+        List<ArticleListVo> articleListVos = BeanCopyUtils.copyBeanList(articlePage.getRecords(), ArticleListVo.class);
+        PageVo pageVo = new PageVo(articleListVos,articlePage.getTotal());
+        return ResponseResult.okResult(pageVo);
+    }
 
     @Override
     public ResponseResult deleteArticle(Long id) {

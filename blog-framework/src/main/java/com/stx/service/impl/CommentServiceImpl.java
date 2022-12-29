@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stx.constants.SystemConstants;
 import com.stx.domain.ResponseResult;
+import com.stx.domain.dto.GetCommentDto;
 import com.stx.domain.entity.Comment;
 import com.stx.domain.entity.User;
 import com.stx.domain.vo.CommentVo;
@@ -15,6 +16,7 @@ import com.stx.mapper.CommentMapper;
 import com.stx.service.CommentService;
 import com.stx.service.UserService;
 import com.stx.utils.BeanCopyUtils;
+import io.jsonwebtoken.lang.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -33,6 +35,20 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Autowired
     private UserService userService;
 
+
+    @Override
+    public ResponseResult getComment(Integer pageNum, Integer pageSize, GetCommentDto dto) {
+        LambdaQueryWrapper<Comment> commentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+
+//        commentLambdaQueryWrapper.eq(Strings.hasText(dto.getNickName()),Comment::getCreateBy,)
+        return null;
+    }
+
+    @Override
+    public ResponseResult deleteComment(Long id) {
+        removeById(id);
+        return ResponseResult.okResult();
+    }
 
     @Override
     public ResponseResult addComment(Comment comment) {
